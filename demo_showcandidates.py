@@ -28,11 +28,18 @@ class Demo(QWidget):
     chosen_similarities = {"C+T+S+F", "T+S+F", "F", "S"}
     regions = list()
 
-    def __init__(self, ndimg):
-        super().__init__()
+    def __init__(self, filename):
+	QWidget.__init__(self)
+        #super().__init__()
+
+        ndimg = skimage.io.imread(filename)
+        if len(ndimg.shape) == 2:
+            ndimg = skimage.color.gray2rgb(ndimg)
+
         self.ndimg = ndimg
         h, w = ndimg.shape[:2]
-        self.qimg = QImage(ndimg.flatten(), w, h, QImage.Format_RGB888)
+        #self.qimg = QImage(ndimg.flatten(), w, h, QImage.Format_ARGB4444_Premultiplied)
+        self.qimg = QImage(filename)
 
         self.layout = QGridLayout()
         self.setLayout(self.layout)
@@ -162,12 +169,9 @@ if __name__=="__main__":
     parser.add_argument('-i', '--image', type=str, required=True, help='filename of the image')
     args = parser.parse_args()
 
-    img = skimage.io.imread(args.image)
-    if len(img.shape) == 2:
-        img = skimage.color.gray2rgb(img)
 
     app = QApplication(sys.argv)
-    wnd = Demo(img)
+    wnd = Demo(args.image)
     wnd.show()
     app.exec_()
 
